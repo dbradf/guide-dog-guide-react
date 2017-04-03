@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import marked from 'marked';
@@ -17,8 +16,6 @@ class MenuItem extends Component {
   }
 
   handleClick(e) {
-    // e.preventDefault();
-
     this.props.update(this.props.content);
   }
 
@@ -30,10 +27,29 @@ class MenuItem extends Component {
 }
 
 class Menu extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showMenu: true
+    };
+
+    this.itemSelected = this.itemSelected.bind(this);
+    this.toggleMenu = this.toggleMenu.bind(this);
+  }
+
+  itemSelected(contents) {
+    this.props.toggleMenu(false);
+    this.props.update(contents);
+  }
+
+  toggleMenu(showMenu) {
+    this.props.toggleMenu(showMenu);
+  }
 
   render() {
     return (
-      <Navbar collapseOnSelect>
+      <Navbar collapseOnSelect expanded={this.props.showMenu} onToggle={this.toggleMenu}>
         <Navbar.Header>
           <Navbar.Brand>
             Guide Dog Guide
@@ -45,7 +61,7 @@ class Menu extends Component {
           <Nav>
             {
               this.props.documents.map((doc, idx) => 
-                <MenuItem name={doc.name} content={doc.content} update={this.props.update} key={idx} />
+                <MenuItem name={doc.name} content={doc.content} update={this.itemSelected} key={idx} />
             )}
           </Nav>
         </Navbar.Collapse>
@@ -62,10 +78,12 @@ class App extends Component {
       documents: [
         { name: 'Introduction Video', content: ''}
       ],
-      selectedContent: ''
+      selectedContent: '',
+      showMenu: false
     };
 
     this.selectContent = this.selectContent.bind(this);
+    this.updateMenu = this.updateMenu.bind(this);
   }
 
   componentDidMount() {
@@ -91,9 +109,16 @@ class App extends Component {
   }
 
   selectContent(content) {
-    console.log(content);
     this.setState({
       selectedContent: content
+    });
+  }
+
+  updateMenu(showMenu) {
+    console.log(showMenu);
+
+    this.setState({
+      showMenu: showMenu
     });
   }
 
@@ -101,7 +126,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Menu documents={this.state.documents} update={this.selectContent}></Menu>
+        <Menu documents={this.state.documents} update={this.selectContent} showMenu={this.state.showMenu} toggleMenu={this.updateMenu}></Menu>
         <div dangerouslySetInnerHTML={{__html: this.state.selectedContent }}>
         </div>
       </div>
