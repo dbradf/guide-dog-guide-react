@@ -79,7 +79,7 @@ class App extends Component {
         { name: 'Introduction Video', content: ''}
       ],
       selectedContent: '',
-      showMenu: false
+      showMenu: true
     };
 
     this.selectContent = this.selectContent.bind(this);
